@@ -64,16 +64,21 @@ public class ClosestPointsCalculator {
                 strip.add(points[i]);
             }
         }
+
         strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
 
         int n = strip.size();
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n && strip.get(j).y() - strip.get(i).y() < minPair.distance; j++) {
-                //double dist = distance(strip.get(i), strip.get(j));
-                double dist = strip.get(i).distanceTo(strip.get(j));
-                if (dist < minPair.distance) {
-                    minPair = new Pair(strip.get(i), strip.get(j), dist);
-                }
+            for (int j = i + 1; j < n; j++) {
+                 if (strip.get(j).y() - strip.get(i).y() > minPair.distance){
+                     break;
+                 }else {
+                     double dist = strip.get(i).distanceTo(strip.get(j));
+                     if (dist < minPair.distance) {
+                         minPair = new Pair(strip.get(i), strip.get(j), dist);
+                     }
+                 }
+
             }
         }
 
