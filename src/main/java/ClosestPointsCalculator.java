@@ -51,7 +51,7 @@ public class ClosestPointsCalculator {
     private static Pair findClosestPair(Point[] sortedByX, Point[] sortedByY, int left, int right) {
 
         if (right - left <= 3) {
-            return new Pair(sortedByY);
+            return bruteForce(sortedByX, left, right);
         }
 
         int mid = (left + right) / 2;
@@ -112,4 +112,19 @@ public class ClosestPointsCalculator {
 //
 //        return minPair;
     }
+
+    private static Pair bruteForce(Point[] points, int left, int right) {
+        Pair minPair = new Pair(null, null, Double.POSITIVE_INFINITY);
+        for (int i = left; i <= right; i++) {
+            for (int j = i + 1; j <= right; j++) {
+                //double dist = distance(points[i], points[j]);
+                double dist = points[i].distanceTo(points[j]);
+                if (dist < minPair.distance) {
+                    minPair = new Pair(points[i], points[j], dist);
+                }
+            }
+        }
+        return minPair;
+    }
+
 }
