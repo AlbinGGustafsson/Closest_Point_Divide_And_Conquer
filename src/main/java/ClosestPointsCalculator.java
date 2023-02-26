@@ -50,7 +50,7 @@ public class ClosestPointsCalculator {
 
     private static Pair findClosestPair(Point[] sortedByX, Point[] sortedByY, int left, int right) {
 
-        if (right - left <= 3) {
+        if (right - left <= 4) {
             return bruteForce(sortedByX, left, right);
         }
 
@@ -92,9 +92,9 @@ public class ClosestPointsCalculator {
 //                strip.add(sortedByY[i]);
 //            }
 //        }
-
-        //strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
-
+//
+//        strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
+//
 //        int n = strip.size();
 //        for (int i = 0; i < n; i++) {
 //            for (int j = i + 1; j < n; j++) {
