@@ -35,20 +35,27 @@ public class ClosestPointsCalculator {
     }
 
     public static Point[] findClosestPairOfPoints(Point[] points) {
-        Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        return findClosestPair(points, 0, points.length - 1).toPointArray();
+        //Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
+
+        Point[] sortedByX = Arrays.copyOf(points, points.length);
+        Point[] sortedByY = Arrays.copyOf(points, points.length);
+
+        Arrays.sort(sortedByX,(p1, p2) -> Double.compare(p1.x(), p2.x()));
+        Arrays.sort(sortedByY,(p1, p2) -> Double.compare(p1.y(), p2.y()));
+
+        return findClosestPair(sortedByX, sortedByY,  0, points.length - 1).toPointArray();
     }
 
-    private static Pair findClosestPair(Point[] points, int left, int right) {
+    private static Pair findClosestPair(Point[] sortedByX, Point[] sortedByY, int left, int right) {
         if (right - left <= 3) {
-            return new Pair(points);
+            return new Pair(sortedByX);
         }
 
         int mid = (left + right) / 2;
-        Point midPoint = points[mid];
+        Point midPoint = sortedByX[mid];
 
-        Pair leftPair = findClosestPair(points, left, mid);
-        Pair rightPair = findClosestPair(points, mid + 1, right);
+        Pair leftPair = findClosestPair(sortedByX, sortedByY,  left, mid);
+        Pair rightPair = findClosestPair(sortedByX, sortedByY, mid + 1, right);
 
         Pair minPair;
         if (leftPair.distance < rightPair.distance) {
@@ -60,12 +67,12 @@ public class ClosestPointsCalculator {
 
         List<Point> strip = new ArrayList<>();
         for (int i = left; i <= right; i++) {
-            if (Math.abs(points[i].x() - midPoint.x()) < minPair.distance) {
-                strip.add(points[i]);
+            if (Math.abs(sortedByY[i].x() - midPoint.x()) < minPair.distance) {
+                strip.add(sortedByY[i]);
             }
         }
 
-        strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
+        //strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
 
         int n = strip.size();
         for (int i = 0; i < n; i++) {
