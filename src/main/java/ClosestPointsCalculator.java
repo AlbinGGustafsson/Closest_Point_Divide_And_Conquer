@@ -36,36 +36,19 @@ public class ClosestPointsCalculator {
 
     public static Point[] findClosestPairOfPoints(Point[] points) {
         Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        return closestPairHelper(points, 0, points.length - 1).toPointArray();
-
-//        Pair closest = closestPair(points);
-//        return closest.toPointArray();
-
-//        Point[] pts = new Point[2];
-//        pts[0] = closest.p1;
-//        pts[1] = closest.p2;
-//        return pts;
+        return findClosestPair(points, 0, points.length - 1).toPointArray();
     }
 
-    public static Pair closestPair(Point[] points) {
-        Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        return closestPairHelper(points, 0, points.length - 1);
-        //return bruteForce(points, 0, points.length - 1);
-    }
-
-    private static Pair closestPairHelper(Point[] points, int left, int right) {
+    private static Pair findClosestPair(Point[] points, int left, int right) {
         if (right - left <= 3) {
-            System.out.println("ja");
             return new Pair(points);
-            //return new Pair(points[0], points[1], points[0].distanceTo(points[1]));
-            //return bruteForce(points, left, right);
         }
-        System.out.println("nej");
+
         int mid = (left + right) / 2;
         Point midPoint = points[mid];
 
-        Pair leftPair = closestPairHelper(points, left, mid);
-        Pair rightPair = closestPairHelper(points, mid + 1, right);
+        Pair leftPair = findClosestPair(points, left, mid);
+        Pair rightPair = findClosestPair(points, mid + 1, right);
 
         Pair minPair;
         if (leftPair.distance < rightPair.distance) {
@@ -94,28 +77,6 @@ public class ClosestPointsCalculator {
             }
         }
 
-        //Typ här man ska sätta dem, inte i loopen, pga hur rekursiviteten fungerar
-        //System.out.printf("%s has now the smallest distance%n", minPair);
         return minPair;
     }
-
-    private static Pair bruteForce(Point[] points, int left, int right) {
-        Pair minPair = new Pair(null, null, Double.POSITIVE_INFINITY);
-        for (int i = left; i <= right; i++) {
-            for (int j = i + 1; j <= right; j++) {
-                //double dist = distance(points[i], points[j]);
-                double dist = points[i].distanceTo(points[j]);
-                if (dist < minPair.distance) {
-                    minPair = new Pair(points[i], points[j], dist);
-                }
-            }
-        }
-        return minPair;
-    }
-
-//    private static double distance(Point p1, Point p2) {
-//        double dx = p1.x() - p2.x();
-//        double dy = p1.y() - p2.y();
-//        return Math.sqrt(dx * dx + dy * dy);
-//    }
 }
