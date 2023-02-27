@@ -42,91 +42,149 @@ public class ClosestPointsCalculator {
         }
     }
 
-    static double closestUtil(Point[] Px, Point[] Py, int n) {
+    // Method to find the min distance
+    public static double closestPair(Point[] points) {
+        int n = points.length;
+        Point[] xSorted = new Point[n];
+        Point[] ySorted = new Point[n];
 
+        for (int i = 0; i < n; i++) {
+            xSorted[i] = points[i];
+            ySorted[i] = points[i];
+        }
+        // sort array using x coordinate
+        Arrays.sort(xSorted, (p1, p2) -> p1.x() - p2.x());
+
+        // sort array using y coordinate
+        Arrays.sort(ySorted, (p1, p2) -> p1.y() - p2.y());
+
+        return closestPair(xSorted, ySorted, 0, n - 1);
+    }
+
+    // recursive call to find the closest pair distance
+    private static double closestPair(Point[] px, Point[] py, int low, int high) {
+        // count points in the search space
+        int n = high - low + 1;
+
+        //If there are 2 or 3 points, then use brute force
         if (n <= 3) {
-            return bruteForce(Px, n);
+            return closestPairUsingBruteForce(px);
         }
 
-        int mid = n / 2;
-        Point midPoint = Px[mid];
+        // find middle element of the search space
+        // to divide the space into two halves
+        int mid = low + (high - low) / 2;
+        Point midPoint = px[mid];
 
-        Point[] Pyl = new Point[mid];
-        Point[] Pyr = new Point[n - mid];
+        // find left and right min recursively
+        double leftMin = closestPair(px, py, low, mid);
+        double rightMin = closestPair(px, py, mid + 1, high);
 
-        Point[] Pxr = Arrays.copyOfRange(Px, mid, n);
+        // find the min distance from left and right search space
+        double minDistance = Math.min(leftMin, rightMin);
 
-        int li = 0, ri = 0;
+        // there might be possibility that min distance might be there by one point from left and one point from right
+        // to find such scenarios create strip of distance minDistance from both sides
+        // find the strip of values which are closer at a distance of d
+        int stripLeft = -1;
+        int stripRight = -1;
 
-        for (int i = 0; i < n; i++) {
-            if ((Py[i].x() < midPoint.x() || (Py[i].x() == midPoint.x() && Py[i].y() < midPoint.y())) && li < mid) {
-                Pyl[li++] = Py[i];
-            } else {
-                Pyr[ri++] = Py[i];
-            }
-        }
-
-        double dl = closestUtil(Px, Pyl, mid);
-        double dr = closestUtil(Pxr, Pyr, n - mid);
-
-        double d = Math.min(dl, dr);
-
-        List<Point> strip = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            if (Math.abs(Py[i].x() - midPoint.x()) < d) {
-                strip.add(Py[i]);
-            }
-        }
-
-        int stripSize = strip.size();
-        for (int i = 0; i < stripSize; i++) {
-            for (int j = i + 1; j < stripSize; j++) {
-                if (strip.get(j).y() - strip.get(i).y() > d) {
-                    break;
+        for (int i = low; i < high; i++) {
+            if (Math.abs(py[i].x() - midPoint.x()) < minDistance) {
+                if (stripLeft == -1) {
+                    stripLeft = i;
                 } else {
-                    double distance = strip.get(i).distanceTo(strip.get(j));
-                    if (distance < d) {
-                        d = distance;
-                        bestPair = new Pair(strip.get(i), strip.get(j), d);
-                    }
+                    stripRight = i;
                 }
             }
         }
 
-        return d;
+        double minFromStrip = getMinStripeDistance(py, stripLeft, stripRight);
+        return Math.min(minDistance, minFromStrip);
+
+//        List<Point> strip = new ArrayList<>();
+//        for (int i = 0; i < n; i++) {
+//            if (Math.abs(py[i].x() - midPoint.x()) < minDistance) {
+//                strip.add(py[i]);
+//            }
+//        }
+//
+//        int stripSize = strip.size();
+//        for (int i = 0; i < stripSize; i++) {
+//            for (int j = i + 1; j < stripSize; j++) {
+//                if (strip.get(j).y() - strip.get(i).y() > minDistance) {
+//                    break;
+//                } else {
+//                    double distance = strip.get(i).distanceTo(strip.get(j));
+//                    if (distance < minDistance) {
+//                        minDistance = distance;
+//                        bestPair = new Pair(strip.get(i), strip.get(j), minDistance);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return minDistance;
 
     }
 
-    static double bruteForce(Point[] points, int n) {
 
+    public static double closestPairUsingBruteForce(Point[] points) {
         double min = Double.MAX_VALUE;
 
-        for (int i = 0; i < n; ++i) {
-            for (int j = i + 1; j < n; ++j) {
-                if (points[i].distanceTo(points[j]) < min) {
-                    min = points[i].distanceTo(points[j]);
+        for (int i = 0; i < points.length; i++) {
+            for (int j = i + 1; j < points.length; j++) {
+                double dist = points[i].distanceTo(points[j]);
+                if(dist < min) {
+                    min = dist;
                     bestPair = new Pair(points[i], points[j], min);
                 }
+                min = Math.min(min, dist);
+
             }
         }
-
         return min;
     }
 
-    static double findClosest(Point[] points, int n) {
+    // min distance in strip of points
+    private static double getMinStripeDistance(Point[] ySorted, int low, int high) {
+        double min = Double.MAX_VALUE ;
 
-        Point[] Px = points.clone();
-        Point[] Py = points.clone();
-
-        Arrays.sort(Px, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        Arrays.sort(Py, (p1, p2) -> Double.compare(p1.y(), p2.y()));
-
-        return closestUtil(Px, Py, n);
+        //Pick all points one by one and try the next points till the difference
+        //between y coordinates is smaller than d.
+        //This is a proven fact that this loop runs at most 6 times
+        for(int i=low; i<=high; i++) {
+            for(int j=i+1; j<=high; j++) {
+                min = Math.min(min, ySorted[i].distanceTo(ySorted[j]));
+                bestPair = new Pair(ySorted[i], ySorted[j], min);
+            }
+        }
+        return min;
     }
 
 
+
+//    // brute force method to check min distance
+//    // this method is used only if we have <=3 points in the plane
+//    public static double closestPairUsingBruteForce(Point[] points) {
+//        double min = Double.MAX_VALUE;
+//
+//        for (int i = 0; i < points.length; ++i) {
+//            for (int j = i + 1; j < points.length; ++j) {
+//                if (points[i].distanceTo(points[j]) < min) {
+//                    min = points[i].distanceTo(points[j]);
+//                    bestPair = new Pair(points[i], points[j], min);
+//                }
+//            }
+//        }
+//
+//        return min;
+//    }
+
+
+
     public static Point[] findClosestPairOfPoints(Point[] points) {
-        findClosest(points, points.length);
+        closestPair(points);
         return bestPair.toPointArray();
     }
 
