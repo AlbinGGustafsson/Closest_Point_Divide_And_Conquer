@@ -110,6 +110,7 @@ public class ClosestPointsCalculator {
 //            }
 //        }
 
+        //OLD from the K
 //        ArrayList<Point> strip = new ArrayList<Point>();
 //
 //        for (int i = 0; i < ySorted.length; i++) {
