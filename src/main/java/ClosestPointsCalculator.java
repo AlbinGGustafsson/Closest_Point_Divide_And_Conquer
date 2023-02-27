@@ -76,29 +76,51 @@ public class ClosestPointsCalculator {
             minDist = delta.distance;
         }
 
-        ArrayList<Point> strip = new ArrayList<Point>();
-
+        List<Point> strip = new ArrayList<>();
         for (int i = 0; i < ySorted.length; i++) {
             if (Math.abs(ySorted[i].x() - median.x()) < delta.distance) {
                 strip.add(ySorted[i]);
             }
         }
-        //loop skipped when if statement above is fullfilled
-        for (int i = 0; i < strip.size(); i++) {
-            for (int j = i + 1; j < strip.size() - 1; j++) {
-                if (strip.get(i).y() - strip.get(j).y() > delta.distance) {
-                    break;
-                } else if (distance(strip.get(i), strip.get(j)) < delta.distance) {
-                    double distance = strip.get(i).distanceTo(strip.get(j));
-                    if (distance < minDist) {
-                        minDist = distance;
-                        delta = new Pair(strip.get(i), strip.get(j), minDist);
 
-                        System.out.printf("%s is now the closest pairs%n", delta);
+        int n = strip.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (strip.get(j).y() - strip.get(i).y() > delta.distance) {
+                    break;
+                } else {
+                    double dist = strip.get(i).distanceTo(strip.get(j));
+                    if (dist < delta.distance) {
+                        delta = new Pair(strip.get(i), strip.get(j), dist);
                     }
                 }
+
             }
         }
+
+//        ArrayList<Point> strip = new ArrayList<Point>();
+//
+//        for (int i = 0; i < ySorted.length; i++) {
+//            if (Math.abs(ySorted[i].x() - median.x()) < delta.distance) {
+//                strip.add(ySorted[i]);
+//            }
+//        }
+//        //loop skipped when if statement above is fullfilled
+//        for (int i = 0; i < strip.size(); i++) {
+//            for (int j = i + 1; j < strip.size() - 1; j++) {
+//                if (strip.get(i).y() - strip.get(j).y() > delta.distance) {
+//                    break;
+//                } else if (distance(strip.get(i), strip.get(j)) < delta.distance) {
+//                    double distance = strip.get(i).distanceTo(strip.get(j));
+//                    if (distance < minDist) {
+//                        minDist = distance;
+//                        delta = new Pair(strip.get(i), strip.get(j), minDist);
+//
+//                        System.out.printf("%s is now the closest pairs%n", delta);
+//                    }
+//                }
+//            }
+//        }
 
         return delta;
     }
