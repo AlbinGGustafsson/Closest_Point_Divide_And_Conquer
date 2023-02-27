@@ -48,6 +48,7 @@ public class ClosestPointsCalculator {
         Arrays.sort(sortedByX, (p1, p2) -> Double.compare(p1.x(), p2.x()));
         Arrays.sort(sortedByY, (p1, p2) -> Double.compare(p1.y(), p2.y()));
 
+        //return bruteForceMinPair(sortedByX, 0, points.length - 1).toPointArray();
         return findClosestPoint(sortedByX, sortedByY, 0, points.length - 1).toPointArray();
     }
 
@@ -64,28 +65,50 @@ public class ClosestPointsCalculator {
         Pair rightMin = findClosestPoint(xSorted, ySorted, midIndex + 1, right);
         Pair minPair = (leftMin.distance < rightMin.distance) ? leftMin : rightMin;
 
-        List<Point> strip = new ArrayList<>();
+
+        Point[] strip = new Point[ySorted.length];
+        int stripSize = 0;
         for (int i = 0; i < ySorted.length; i++) {
             if (Math.abs(ySorted[i].x() - midPoint.x()) < minPair.distance) {
-                strip.add(ySorted[i]);
+                strip[stripSize++] = ySorted[i];
             }
         }
 
-        int stripSize = strip.size();
         for (int i = 0; i < stripSize; i++) {
             for (int j = i + 1; j < stripSize; j++) {
-                if (strip.get(j).y() - strip.get(i).y() > minPair.distance) {
+                if (strip[j].y() - strip[i].y() > minPair.distance) {
                     break;
                 } else {
-                    double dist = strip.get(i).distanceTo(strip.get(j));
+                    double dist = strip[i].distanceTo(strip[j]);
                     if (dist < minPair.distance) {
-                        //minPair = new Pair(strip.get(i), strip.get(j), dist);
-                        minPair.updatePair(strip.get(i), strip.get(j), dist);
+                        minPair.updatePair(strip[i], strip[j], dist);
                     }
                 }
-
             }
         }
+
+//        List<Point> strip = new ArrayList<>();
+//        for (int i = 0; i < ySorted.length; i++) {
+//            if (Math.abs(ySorted[i].x() - midPoint.x()) < minPair.distance) {
+//                strip.add(ySorted[i]);
+//            }
+//        }
+//
+//        int stripSize = strip.size();
+//        for (int i = 0; i < stripSize; i++) {
+//            for (int j = i + 1; j < stripSize; j++) {
+//                if (strip.get(j).y() - strip.get(i).y() > minPair.distance) {
+//                    break;
+//                } else {
+//                    double dist = strip.get(i).distanceTo(strip.get(j));
+//                    if (dist < minPair.distance) {
+//                        //minPair = new Pair(strip.get(i), strip.get(j), dist);
+//                        minPair.updatePair(strip.get(i), strip.get(j), dist);
+//                    }
+//                }
+//
+//            }
+//        }
 
 //        ArrayList<Point> strip = new ArrayList<Point>();
 //
