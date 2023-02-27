@@ -4,6 +4,8 @@ import java.util.List;
 
 public class ClosestPointsCalculator {
 
+    private static Pair bestPair = null;
+
     private static class Pair {
         private Point p1, p2;
         double distance;
@@ -40,87 +42,92 @@ public class ClosestPointsCalculator {
         }
     }
 
-    public static Point[] findClosestPairOfPoints(Point[] points) {
-        Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        //return bruteForceMinPair(points, 0, points.length - 1).toPointArray();
-        return findClosestPair(points, 0, points.length - 1).toPointArray();
-    }
+    static double closestUtil(Point[] Px, Point[] Py, int n) {
 
-    private static Pair findClosestPair(Point[] points, int left, int right) {
-
-        int length = right - left + 1;
-
-        //När det bara är 3 eller mindre som ska "jämföras" så "bruteforcas" det minsta paret fram.
-        //Även om det är en loop i en loop så påverkas inte tidskomplexiteten för att det är så få varv.
-        if (length <= 3) {
-            return bruteForceMinPair(points, left, right);
+        if (n <= 3) {
+            return bruteForce(Px, n);
         }
 
-        int mid = (left + right) / 2;
-        Point midPoint = points[mid];
+        int mid = n / 2;
+        Point midPoint = Px[mid];
 
-        //Antingen så kommer närmsta paret ligga i vänstra delen, högra delen eller i en av varje.
+        Point[] Pyl = new Point[mid];
+        Point[] Pyr = new Point[n - mid];
 
-        //Anropar vänstra delen och högra delen rekursivt.
-        //För att hitta närmsta paren i bägge delar.
-        //Kommer tillslut hamna i "basfallet" och då kommer det minsta paret "bruteforcas".
-        Pair leftPair = findClosestPair(points, left, mid);
-        Pair rightPair = findClosestPair(points, mid + 1, right);
+        Point[] Pxr = Arrays.copyOfRange(Px, mid, n);
 
-        //C steget påvägen upp?
-         Pair minPair = (leftPair.distance < rightPair.distance) ? leftPair : rightPair;
+        int li = 0, ri = 0;
 
-        //Det finns en chans att närmsta paret har en punkt i vänstra och en punkt i högra.
-        //Ett sådant par kan vara närmst om den ligger i strippen.
-        //Strippen är minPair.distance från mitten.
-
-        //Lägger till Points som ligger i "strippen".
-        List<Point> strip = new ArrayList<>();
-        for (int i = left; i <= right; i++) {
-            if (Math.abs(points[i].x() - midPoint.x()) < minPair.distance) {
-                strip.add(points[i]);
+        for (int i = 0; i < n; i++) {
+            if ((Py[i].x() < midPoint.x() || (Py[i].x() == midPoint.x() && Py[i].y() < midPoint.y())) && li < mid) {
+                Pyl[li++] = Py[i];
+            } else {
+                Pyr[ri++] = Py[i];
             }
         }
 
-        //Denna sortering görs bara på Pointsen som ligger i strippen.
-        //I ett värsta fall ligger alla Points i strippen men i praktiken antar jag att det sker sällan
-        //I det fallet blir denna sortering O(N log N) vilket då även gör det rekursiva anropet O(N log N).
-        strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
+        double dl = closestUtil(Px, Pyl, mid);
+        double dr = closestUtil(Pxr, Pyr, n - mid);
 
-        int n = strip.size();
+        double d = Math.min(dl, dr);
+
+        List<Point> strip = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                //Om Pointsen som jämförs y koordinater skiljer mer än minsta distance i leftPair och rightPair så är dess distance högre.
-                //I det fallet kan vi gå till i+1.
-                if (strip.get(j).y() - strip.get(i).y() > minPair.distance) {
+            if (Math.abs(Py[i].x() - midPoint.x()) < d) {
+                strip.add(Py[i]);
+            }
+        }
+
+        int stripSize = strip.size();
+        for (int i = 0; i < stripSize; i++) {
+            for (int j = i + 1; j < stripSize; j++) {
+                if (strip.get(j).y() - strip.get(i).y() > d) {
                     break;
                 } else {
                     double distance = strip.get(i).distanceTo(strip.get(j));
-                    //Om en Point har lägre distance än den hittils minsta distance så är det den nya minsta
-                    if (distance < minPair.distance) {
-                        //minPair = new Pair(strip.get(i), strip.get(j), distance);
-                        minPair.updatePair(strip.get(i), strip.get(j), distance);
+                    if (distance < d) {
+                        d = distance;
+                        bestPair = new Pair(strip.get(i), strip.get(j), d);
                     }
                 }
-
             }
         }
 
-        return minPair;
+        return d;
+
     }
 
-    private static Pair bruteForceMinPair(Point[] points, int left, int right) {
-        Pair minPair = new Pair(null, null, Double.POSITIVE_INFINITY);
-        for (int i = left; i <= right; i++) {
-            for (int j = i + 1; j <= right; j++) {
-                double distance = points[i].distanceTo(points[j]);
-                if (distance < minPair.distance) {
-                    //minPair = new Pair(points[i], points[j], distance);
-                    minPair.updatePair(points[i], points[j], distance);
+    static double bruteForce(Point[] points, int n) {
+
+        double min = Double.MAX_VALUE;
+
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (points[i].distanceTo(points[j]) < min) {
+                    min = points[i].distanceTo(points[j]);
+                    bestPair = new Pair(points[i], points[j], min);
                 }
             }
         }
-        return minPair;
+
+        return min;
+    }
+
+    static double findClosest(Point[] points, int n) {
+
+        Point[] Px = points.clone();
+        Point[] Py = points.clone();
+
+        Arrays.sort(Px, (p1, p2) -> Double.compare(p1.x(), p2.x()));
+        Arrays.sort(Py, (p1, p2) -> Double.compare(p1.y(), p2.y()));
+
+        return closestUtil(Px, Py, n);
+    }
+
+
+    public static Point[] findClosestPairOfPoints(Point[] points) {
+        findClosest(points, points.length);
+        return bestPair.toPointArray();
     }
 
 }
