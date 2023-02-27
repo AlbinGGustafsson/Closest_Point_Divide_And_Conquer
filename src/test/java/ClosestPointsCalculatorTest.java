@@ -64,8 +64,6 @@ public class ClosestPointsCalculatorTest {
 		Point[] expected = bruteForceSolution(points);
 
 		Point[] actual = assertTimeoutPreemptively(Duration.ofMillis(DEFAULT_TIMEOUT_MILLIS), () -> {
-
-			System.out.println(points.length);
 			return ClosestPointsCalculator.findClosestPairOfPoints(points);
 		});
 
