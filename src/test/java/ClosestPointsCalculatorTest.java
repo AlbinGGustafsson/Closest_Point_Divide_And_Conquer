@@ -63,11 +63,12 @@ public class ClosestPointsCalculatorTest {
 		Point[] points = randomPoints(numberOfPoints);
 		Point[] expected = bruteForceSolution(points);
 
+		long start = System.currentTimeMillis();
 		Point[] actual = assertTimeoutPreemptively(Duration.ofMillis(DEFAULT_TIMEOUT_MILLIS), () -> {
-
-			System.out.println(points.length);
+			//System.out.println(points.length);
 			return ClosestPointsCalculator.findClosestPairOfPoints(points);
 		});
+		System.out.println("number: " + numberOfPoints + " time: " + (System.currentTimeMillis() - start));
 
 		assertEquals(expected[0].distanceTo(expected[1]), actual[0].distanceTo(actual[1]), 0.001,
 				errorMsg(points, actual, expected));
