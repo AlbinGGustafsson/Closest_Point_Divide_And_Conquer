@@ -66,6 +66,7 @@ public class ClosestPointsCalculator {
         Pair leftPair = findClosestPair(points, left, mid);
         Pair rightPair = findClosestPair(points, mid + 1, right);
 
+        //C steget påvägen upp?
         Pair minPair = (leftPair.distance < rightPair.distance) ? leftPair : rightPair;
 
         //Det finns en chans att närmsta paret har en punkt i vänstra och en punkt i högra.
