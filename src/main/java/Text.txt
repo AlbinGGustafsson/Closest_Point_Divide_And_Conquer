@@ -1,0 +1,38 @@
+Implementation:
+
+Min implementation till algrotimen som löser "Closest point problem".
+Använder sig utav "divide and conquer" för att hitta det närmsta paret.
+
+Den börjar med att sortera alla punkter på dess x-koordinater.
+Sedan anropas en rekursiv metod med denna sorterade array.
+Algoritmen tar fram en mittpunkt på x axeln.
+
+Algoritmen tar fram det minsta paret på vardera sida om denna mittpunkt med två rekursiva anrop.
+Dessa halvor kommer att minska med 2 för varje rekursivt anrop.
+När denna "halva" är <= 3 så når den ett "basecase", då hittar den det minsta paret med hjälp av vanlig O(N^2) sökning.
+
+Det finns dock en möjlighet att de 2 närmsta punkterna i en halva korsar dess mittlinje så man måste även ta hänsyn till dessa.
+Om jag kallar distansen mellan de närmsta paren som ligger i någon av halvorna d.
+För att ett par som "korsar" dess mittlinje ska ha mindre "distance" så måste det ligga inom d steg från denna mittlinje.
+De punkter som uppfyller det steget läggs i en separat lista, "strip".
+
+Denna lista sorteras sedan på punkternas y-koordinater.
+Eftersom som denna lista är sorterad på det viset så kan man stoppa en sökning från en
+punkt om dess y värde och punkten den jämförs meds y värde skuljer sig mer än d.
+Detta gör att antalet punkter som måste jämföras i "strippen" går ner mycket.
+Det "närmsta paret" returneras sedan från det rekursiva anropet.
+
+
+
+Designval:
+Jag har valt att ett par representeras av en klass Pair.
+När ett nytt minsta par hittas så sparas punkterna och dess distans i ett Pair objekt.
+Jag har gjort detta för att det blir väldigt tydligt vad som jämförs (par av punkter) och vad man vill söka efter. (ett par av punkter)
+Pair klassen har en metod som gör det enkelt att omvandla den till en Point Array som testfallen frågar efter.
+
+Ett annat designval är att "strippen" sorteras i varje rekursivt anrop.
+Egentligen så blir värsta fallet för denna sortering O(N LOG N) om alla punkter ligger inut strippen.
+Alltså att i varje rekursivt anrop så finns det ett värst fall att O(N LOG N) jobb måste göras.
+Men jag har valt att behålla det på det viset för att man skulle kunna anta att det sker väldigt sällan i praktiken
+med fördelen att jag tycker att algoritmen blir lite enklare att hänga med i och att förstå.
+
