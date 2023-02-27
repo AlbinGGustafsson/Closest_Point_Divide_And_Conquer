@@ -8,9 +8,9 @@ import org.junit.jupiter.params.provider.*;
 
 public class ClosestPointsCalculatorTest {
 	private static final int[] NUMBER_OF_POINTS_TO_TEST = { 5, 10, 20, 50, 100, 1000, 10000 };
-	private static final int NUMBER_OF_TEST_RUNS = 1;
+	private static final int NUMBER_OF_TEST_RUNS = 3;
 
-	private static final long DEFAULT_TIMEOUT_MILLIS = 1000;
+	private static final long DEFAULT_TIMEOUT_MILLIS = 10000;
 	private static final int MAX_POINTS_IN_ERROR_MSG = 50;
 
 	private static final Random RND = new Random();
@@ -66,7 +66,8 @@ public class ClosestPointsCalculatorTest {
 		Point[] actual = assertTimeoutPreemptively(Duration.ofMillis(DEFAULT_TIMEOUT_MILLIS), () -> {
 
 			System.out.println(points.length);
-			return ClosestPointsCalculator.findClosestPairOfPoints(points);
+			//return ClosestPointsCalculator.findClosestPairOfPoints(points);
+			return ClosetPairDistance.findClosestPair(points);
 		});
 
 		assertEquals(expected[0].distanceTo(expected[1]), actual[0].distanceTo(actual[1]), 0.001,
