@@ -86,7 +86,7 @@ public class ClosestPointsCalculator {
         //loop skipped when if statement above is fullfilled
         for (int i = 0; i < strip.size(); i++) {
             for (int j = i + 1; j < strip.size() - 1; j++) {
-                if (Math.abs(strip.get(i).y() - strip.get(i).y()) > delta.distance) {
+                if (strip.get(i).y() - strip.get(j).y() > delta.distance) {
                     break;
                 } else if (distance(strip.get(i), strip.get(j)) < delta.distance) {
                     double distance = strip.get(i).distanceTo(strip.get(j));
