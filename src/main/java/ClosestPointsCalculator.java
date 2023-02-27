@@ -14,12 +14,6 @@ public class ClosestPointsCalculator {
             this.distance = distance;
         }
 
-        public Pair(Point[] points) {
-            p1 = points[0];
-            p2 = points[1];
-            distance = p1.distanceTo(p2);
-        }
-
         public Point[] toPointArray() {
             return new Point[]{p1, p2};
         }
@@ -42,7 +36,6 @@ public class ClosestPointsCalculator {
 
     public static Point[] findClosestPairOfPoints(Point[] points) {
         Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        //return bruteForceMinPair(points, 0, points.length - 1).toPointArray();
         return findClosestPair(points, 0, points.length - 1).toPointArray();
     }
 
@@ -121,5 +114,4 @@ public class ClosestPointsCalculator {
         }
         return minPair;
     }
-
 }
