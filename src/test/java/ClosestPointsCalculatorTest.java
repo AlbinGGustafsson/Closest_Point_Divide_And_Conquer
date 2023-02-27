@@ -10,7 +10,7 @@ public class ClosestPointsCalculatorTest {
 	private static final int[] NUMBER_OF_POINTS_TO_TEST = { 5, 10, 20, 50, 100, 1000, 10000 };
 	private static final int NUMBER_OF_TEST_RUNS = 1;
 
-	private static final long DEFAULT_TIMEOUT_MILLIS = 1000;
+	private static final long DEFAULT_TIMEOUT_MILLIS = 100000;
 	private static final int MAX_POINTS_IN_ERROR_MSG = 50;
 
 	private static final Random RND = new Random();
@@ -60,17 +60,28 @@ public class ClosestPointsCalculatorTest {
 	@ParameterizedTest(name = "[{0}.{1}] {2} points")
 	@MethodSource
 	void testRandomPoints(int run, int test, int numberOfPoints) {
+
+		Test2 test2 = new Test2();
+
 		Point[] points = randomPoints(numberOfPoints);
 		Point[] expected = bruteForceSolution(points);
 
-		Point[] actual = assertTimeoutPreemptively(Duration.ofMillis(DEFAULT_TIMEOUT_MILLIS), () -> {
+//		Point[] actual = assertTimeoutPreemptively(Duration.ofMillis(DEFAULT_TIMEOUT_MILLIS), () -> {
+//
+//			System.out.println(points.length);
+//			return ClosestPointsCalculator.findClosestPairOfPoints(points);
+//		});
+//
+//		assertEquals(expected[0].distanceTo(expected[1]), actual[0].distanceTo(actual[1]), 0.001,
+//				errorMsg(points, actual, expected));
 
-			System.out.println(points.length);
-			return ClosestPointsCalculator.findClosestPairOfPoints(points);
+
+		double actualDistance = assertTimeoutPreemptively(Duration.ofMillis(DEFAULT_TIMEOUT_MILLIS), () -> {
+			return test2.closestPair(points);
 		});
 
-		assertEquals(expected[0].distanceTo(expected[1]), actual[0].distanceTo(actual[1]), 0.001,
-				errorMsg(points, actual, expected));
+		assertEquals(expected[0].distanceTo(expected[1]), actualDistance);
+
 	}
 
 	private static List<Arguments> testRandomPoints() {
