@@ -58,13 +58,21 @@ public class ClosestPointsCalculator {
         int mid = (left + right) / 2;
         Point midPoint = points[mid];
 
-        //Rekursiva anrop
+        //Antingen så kommer närmsta paret ligga i vänstra delen, högra delen eller i en av varje.
+
+        //Anropar vänstra delen och högra delen rekursivt.
+        //För att hitta närmsta paren i bägge delar.
+        //Kommer tillslut hamna i "basfallet" och då kommer det minsta paret "bruteforcas".
         Pair leftPair = findClosestPair(points, left, mid);
         Pair rightPair = findClosestPair(points, mid + 1, right);
 
         Pair minPair = (leftPair.distance < rightPair.distance) ? leftPair : rightPair;
 
-        //Lägger till Points som ligger i "stripen".
+        //Det finns en chans att närmsta paret har en punkt i vänstra och en punkt i högra.
+        //Ett sådant par kan vara närmst om den ligger i strippen.
+        //Strippen är minPair.distance från mitten.
+
+        //Lägger till Points som ligger i "strippen".
         List<Point> strip = new ArrayList<>();
         for (int i = left; i <= right; i++) {
             if (Math.abs(points[i].x() - midPoint.x()) < minPair.distance) {
@@ -80,12 +88,13 @@ public class ClosestPointsCalculator {
         int n = strip.size();
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                //Om Pointsen som jämförs y koordinater skiljer mer än minsta distansen i leftPair och rightPair så är dess distans högre.
+                //Om Pointsen som jämförs y koordinater skiljer mer än minsta distance i leftPair och rightPair så är dess distance högre.
                 //I det fallet kan vi gå till i+1.
                 if (strip.get(j).y() - strip.get(i).y() > minPair.distance) {
                     break;
                 } else {
                     double distance = strip.get(i).distanceTo(strip.get(j));
+                    //Om en Point har lägre distance än den hittils minsta distance så är det den nya minsta
                     if (distance < minPair.distance) {
                         //minPair = new Pair(strip.get(i), strip.get(j), distance);
                         minPair.updatePair(strip.get(i), strip.get(j), distance);
