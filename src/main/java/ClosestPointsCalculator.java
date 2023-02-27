@@ -35,53 +35,93 @@ public class ClosestPointsCalculator {
     }
 
     public static Point[] findClosestPairOfPoints(Point[] points) {
-        Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        return findClosestPair(points, 0, points.length - 1).toPointArray();
+        //Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
+        //return findClosestPair(points, 0, points.length - 1).toPointArray();
+
+        Point[] sortedByX = new Point[points.length];
+        Point[] sortedByY = new Point[points.length];
+
+        for (int i = 0; i < points.length; i++){
+            sortedByX[i] = points[i];
+            sortedByY[i] = points[i];
+        }
+        Arrays.sort(sortedByX, (p1, p2) -> Double.compare(p1.x(), p2.x()));
+        Arrays.sort(sortedByY, (p1, p2) -> Double.compare(p1.y(), p2.y()));
+
+        return findClosestPair(sortedByX, sortedByY).toPointArray();
     }
 
-    private static Pair findClosestPair(Point[] points, int left, int right) {
-        if (right - left <= 3) {
-            return new Pair(points);
+    private static Pair findClosestPair(Point[] pointsByX, Point[] pointsByY) {
+        if (pointsByX.length == 1) {
+            return new Pair(pointsByX[0], pointsByX[0], Double.POSITIVE_INFINITY);
+        }
+        if (pointsByX.length == 2) {
+            return new Pair(pointsByX[0], pointsByX[1], pointsByX[0].distanceTo(pointsByX[1]));
         }
 
-        int mid = (left + right) / 2;
-        Point midPoint = points[mid];
+        int midpoint = (pointsByX.length / 2);
 
-        Pair leftPair = findClosestPair(points, left, mid);
-        Pair rightPair = findClosestPair(points, mid + 1, right);
+        Point[] XL = java.util.Arrays.copyOfRange(pointsByX, 0, midpoint);
+        Point[] XR = java.util.Arrays.copyOfRange(pointsByX, midpoint, pointsByX.length);
 
-        Pair minPair;
-        if (leftPair.distance < rightPair.distance) {
-            minPair = leftPair;
+        Point[] YL = new Point[midpoint];
+        Point[] YR = new Point[pointsByY.length - midpoint];
+
+        int yTrackerLeft = 0;
+        int yTrackerRight = 0;
+        int m = 0;
+        while (m < pointsByX.length) {
+            if (pointsByY[m].x() < pointsByX[midpoint].x()) {
+                YL[yTrackerLeft] = pointsByY[m];
+                yTrackerLeft++;
+            } else {
+                YR[yTrackerRight] = pointsByY[m];
+                yTrackerRight++;
+            }
+            m++;
+        }
+
+        Pair distL = findClosestPair(XL, YL);
+        Pair distR = findClosestPair(XR, YR);
+
+        Point mPoint = pointsByX[midpoint];
+        double lrDist = Math.min(distL.distance, distR.distance);
+
+        //Construct yStrip
+
+        ArrayList<Point> yStrip = new ArrayList<Point>();
+
+        int c = 0;
+        while (c < pointsByY.length) {
+            if (Math.abs(pointsByY[c].x() - mPoint.x()) < lrDist) {
+                yStrip.add(pointsByY[c]);
+            }
+            c++;
+        }
+
+        Pair answer;
+        double minDist = lrDist;
+
+        //The only distance that matters is the smallest one, that distance becomes the distance for the answer
+        if (minDist == distL.distance) {
+            answer = distL;
         } else {
-            minPair = rightPair;
+            answer = distR;
         }
-        //Pair minPair = (leftPair.distance < rightPair.distance) ? leftPair : rightPair;
 
-        List<Point> strip = new ArrayList<>();
-        for (int i = left; i <= right; i++) {
-            if (Math.abs(points[i].x() - midPoint.x()) < minPair.distance) {
-                strip.add(points[i]);
+        //Now see if there are two points with a smaller distance within yStrip
+        for (int j = 0; j < yStrip.size(); j++) {
+            int k = j + 1;
+            while ((k < yStrip.size()) && (yStrip.get(k).y() - yStrip.get(j).y() <= lrDist)) {
+                double dst = yStrip.get(j).distanceTo(yStrip.get(k));
+                if (dst < minDist) {
+                    minDist = dst;
+                    answer = new Pair(yStrip.get(j), yStrip.get(k), dst);
+                }
+                k++;
             }
         }
-
-        strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
-
-        int n = strip.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                 if (strip.get(j).y() - strip.get(i).y() > minPair.distance){
-                     break;
-                 }else {
-                     double dist = strip.get(i).distanceTo(strip.get(j));
-                     if (dist < minPair.distance) {
-                         minPair = new Pair(strip.get(i), strip.get(j), dist);
-                     }
-                 }
-
-            }
-        }
-
-        return minPair;
+        //This is the final answer
+        return answer;
     }
 }
