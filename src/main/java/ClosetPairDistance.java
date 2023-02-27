@@ -69,8 +69,8 @@ public class ClosetPairDistance {
         Point midPoint = px[mid];
 
         // find left and right min recursively
-        double leftMin = closestPair(px, py, low, mid);
-        double rightMin = closestPair(px, py, mid + 1, high);
+        Pair leftMin = closestPair(px, py, low, mid);
+        Pair rightMin = closestPair(px, py, mid + 1, high);
 
         // find the min distance from left and right search space
         double minDistance = Math.min(leftMin, rightMin);
@@ -98,20 +98,18 @@ public class ClosetPairDistance {
 
     // brute force method to check min distance
     // this method is used only if we have <=3 points in the plane
-    public Pair closestPairUsingBruteForce(Point[] points) {
-        Pair minPair = new Pair(null, null, MIN_VAL);
-
+    private static Pair closestPairUsingBruteForce(Point[] points) {
+        Pair minPair = new Pair(null, null, Double.POSITIVE_INFINITY);
         for (int i = 0; i < points.length; i++) {
             for (int j = i + 1; j < points.length; j++) {
+                //double dist = distance(points[i], points[j]);
                 double dist = points[i].distanceTo(points[j]);
                 if (dist < minPair.distance) {
-                    minPair = new Pair(points[i], (points[j]), dist);
+                    minPair = new Pair(points[i], points[j], dist);
                 }
-                minPair = Math.min(min, dist);
-
             }
         }
-        return min;
+        return minPair;
     }
 
     // min distance in strip of points
