@@ -58,8 +58,11 @@ public class ClosestPointsCalculator {
     }
 
     public static Pair findClosestPoint(Point[] xSorted, Point[] ySorted, int bot, int top) {
-        if (top <= bot) {
-            return new Pair(null, null, Double.POSITIVE_INFINITY);
+
+        int yo = top - bot + 1;
+
+        if (yo <= 2) {
+            return new Pair(xSorted);
         }
 
         int mid = (bot + top) / 2;
@@ -71,10 +74,10 @@ public class ClosestPointsCalculator {
 
         //used to shorten down runtime when only 2 nodes are inside a "block".
         //Skips second for-loop using this.
-        if (top - bot == 1 && delta.distance == Double.POSITIVE_INFINITY) {
-            delta = new Pair(xSorted[bot], xSorted[top], xSorted[bot].distanceTo(xSorted[top]));
-            minDist = delta.distance;
-        }
+//        if (top - bot == 1 && delta.distance == Double.POSITIVE_INFINITY) {
+//            delta = new Pair(xSorted[bot], xSorted[top], xSorted[bot].distanceTo(xSorted[top]));
+//            minDist = delta.distance;
+//        }
 
         List<Point> strip = new ArrayList<>();
         for (int i = 0; i < ySorted.length; i++) {
