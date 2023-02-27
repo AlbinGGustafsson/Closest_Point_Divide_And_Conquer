@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class ClosetPairDistance {
 
-    private static class Pair {
+    public static class Pair {
         private Point p1, p2;
         double distance;
 
@@ -32,29 +32,32 @@ public class ClosetPairDistance {
         }
     }
 
-    private static double MIN_VAL = Double.MAX_VALUE;
+
+    public static Point[] findClosestPair(Point[] points){
+        return closestPair(points).toPointArray();
+    }
+
 
     // Method to find the min distance
-    public Pair closestPair(Point[] points) {
-        int n = points.length;
-        Point[] xSorted = new Point[n];
-        Point[] ySorted = new Point[n];
+    public static Pair closestPair(Point[] points) {
+        //int n = points.length;
+        Point[] xSorted = new Point[points.length];
+        Point[] ySorted = new Point[points.length];
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < points.length; i++) {
             xSorted[i] = points[i];
             ySorted[i] = points[i];
         }
         // sort array using x coordinate
         Arrays.sort(xSorted, (p1, p2) -> p1.x() - p2.x());
-
         // sort array using y coordinate
         Arrays.sort(ySorted, (p1, p2) -> p1.y() - p2.y());
 
-        return closestPair(xSorted, ySorted, 0, n - 1);
+        return closestPair(xSorted, ySorted, 0, points.length - 1);
     }
 
     // recursive call to find the closest pair distance
-    private Pair closestPair(Point[] px, Point[] py, int low, int high) {
+    private static Pair closestPair(Point[] px, Point[] py, int low, int high) {
         // count points in the search space
         int n = high - low + 1;
 
@@ -73,7 +76,8 @@ public class ClosetPairDistance {
         Pair rightMin = closestPair(px, py, mid + 1, high);
 
         // find the min distance from left and right search space
-        double minDistance = Math.min(leftMin, rightMin);
+        //double minDistance = Math.min(leftMin, rightMin);
+        Pair minDistance = leftMin.distance < rightMin.distance ? leftMin : rightMin;
 
         // there might be possibility that min distance might be there by one point from left and one point from right
         // to find such scenarios create strip of distance minDistance from both sides
@@ -82,7 +86,7 @@ public class ClosetPairDistance {
         int stripRight = -1;
 
         for (int i = low; i < high; i++) {
-            if (Math.abs(py[i].x() - midPoint.x()) < minDistance) {
+            if (Math.abs(py[i].x() - midPoint.x()) < minDistance.distance) {
                 if (stripLeft == -1) {
                     stripLeft = i;
                 } else {
@@ -91,9 +95,11 @@ public class ClosetPairDistance {
             }
         }
         // now find the min distance from strip of points
-        double minFromStrip = getMinStripeDistance(py, stripLeft, stripRight);
+        Pair minFromStrip = getMinStripeDistance(py, stripLeft, stripRight);
         // finally min distance id the one min of left, right and from the strip
-        return Math.min(minDistance, minFromStrip);
+        //return Math.min(minDistance, minFromStrip);
+
+        return minDistance.distance < minFromStrip.distance ? minDistance : minFromStrip;
     }
 
     // brute force method to check min distance
@@ -113,43 +119,25 @@ public class ClosetPairDistance {
     }
 
     // min distance in strip of points
-    private Pair getMinStripeDistance(Point[] ySorted, int low, int high) {
-        Pair minPair = new Pair(null, null, MIN_VAL);
+    private static Pair getMinStripeDistance(Point[] ySorted, int left, int right) {
+        Pair minPair = new Pair(null, null, Double.POSITIVE_INFINITY);
 
         //Pick all points one by one and try the next points till the difference
         //between y coordinates is smaller than d.
         //This is a proven fact that this loop runs at most 6 times
-        for (int i = low; i <= high; i++) {
-            for (int j = i + 1; j <= high; j++) {
-
-                double dist = ySorted[i].distanceTo(ySorted[j]);
-                if (dist < minPair.distance) {
-                    minPair = new Pair(ySorted[i], (ySorted[j]), dist);
+        for (int i = left; i <= right; i++) {
+            for (int j = i + 1; j <= right; j++) {
+                if (ySorted[j].y() - ySorted[i].y() > minPair.distance) {
+                    break;
+                }else {
+                    double dist = ySorted[i].distanceTo(ySorted[j]);
+                    if (dist < minPair.distance) {
+                        minPair = new Pair(ySorted[i], (ySorted[j]), dist);
+                    }
+                    //min = Math.min(min, ySorted[i].distanceTo(ySorted[j]));
                 }
-                //min = Math.min(min, ySorted[i].distanceTo(ySorted[j]));
             }
         }
         return minPair;
     }
-
-    // method to find min between two values
-
-    // driver method
-    public static void main(String[] args) {
-        int[] x = {2, 12, 40, 5, 12, 3};
-        int[] y = {3, 30, 50, 1, 10, 4};
-
-        int n = x.length;
-        Point[] points = new Point[n];
-
-        for (int i = 0; i < n; i++) {
-            points[i] = new Point(x[i], y[i]);
-        }
-
-        ClosetPairDistance obj = new ClosetPairDistance();
-        Pair distance = obj.closestPair(points);
-
-        System.out.println(distance);
-    }
-
 }
