@@ -40,8 +40,12 @@ public class ClosestPointsCalculator {
     }
 
     private static Pair findClosestPair(Point[] points, int left, int right) {
-        if (right - left <= 3) {
-            return new Pair(points);
+
+        int length = right - left + 1;
+
+        if (length <= 3) {
+            //return new Pair(points);
+            return bruteForceMinPair(points, left, right);
         }
 
         int mid = (left + right) / 2;
@@ -70,18 +74,33 @@ public class ClosestPointsCalculator {
         int n = strip.size();
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                 if (strip.get(j).y() - strip.get(i).y() > minPair.distance){
-                     break;
-                 }else {
-                     double dist = strip.get(i).distanceTo(strip.get(j));
-                     if (dist < minPair.distance) {
-                         minPair = new Pair(strip.get(i), strip.get(j), dist);
-                     }
-                 }
+                if (strip.get(j).y() - strip.get(i).y() > minPair.distance) {
+                    break;
+                } else {
+                    double dist = strip.get(i).distanceTo(strip.get(j));
+                    if (dist < minPair.distance) {
+                        minPair = new Pair(strip.get(i), strip.get(j), dist);
+                    }
+                }
 
             }
         }
 
         return minPair;
     }
+
+    private static Pair bruteForceMinPair(Point[] points, int left, int right) {
+        Pair minPair = new Pair(null, null, Double.POSITIVE_INFINITY);
+        for (int i = left; i <= right; i++) {
+            for (int j = i + 1; j <= right; j++) {
+                //double dist = distance(points[i], points[j]);
+                double dist = points[i].distanceTo(points[j]);
+                if (dist < minPair.distance) {
+                    minPair = new Pair(points[i], points[j], dist);
+                }
+            }
+        }
+        return minPair;
+    }
+
 }
