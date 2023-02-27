@@ -5,30 +5,30 @@ import java.util.List;
 public class ClosestPointsCalculator {
 
     private static class Pair {
-        private Point p1, p2;
+        private Point firstPoint, secondPoint;
         double distance;
 
-        public Pair(Point p1, Point p2, double distance) {
-            this.p1 = p1;
-            this.p2 = p2;
+        public Pair(Point firstPoint, Point secondPoint, double distance) {
+            this.firstPoint = firstPoint;
+            this.secondPoint = secondPoint;
             this.distance = distance;
         }
 
         public Point[] toPointArray() {
-            return new Point[]{p1, p2};
+            return new Point[]{firstPoint, secondPoint};
         }
 
-        public void updatePair(Point p1, Point p2, double distance) {
-            this.p1 = p1;
-            this.p2 = p2;
+        public void updatePair(Point firstPoint, Point secondPoint, double distance) {
+            this.firstPoint = firstPoint;
+            this.secondPoint = secondPoint;
             this.distance = distance;
         }
 
         @Override
         public String toString() {
             return "Pair{" +
-                    "p1=" + p1 +
-                    ", p2=" + p2 +
+                    "p1=" + firstPoint +
+                    ", p2=" + secondPoint +
                     ", dist=" + distance +
                     '}';
         }

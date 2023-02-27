@@ -20,9 +20,6 @@ Denna lista sorteras sedan på punkternas y-koordinater.
 Eftersom som denna lista är sorterad på det viset så kan man stoppa en sökning från en
 punkt om dess y värde och punkten den jämförs meds y värde skuljer sig mer än d.
 Detta gör att antalet punkter som måste jämföras i "strippen" går ner mycket.
-Det "närmsta paret" returneras sedan från det rekursiva anropet.
-
-
 
 Designval:
 Jag har valt att ett par representeras av en klass Pair.
