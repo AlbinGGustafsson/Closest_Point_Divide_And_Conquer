@@ -35,11 +35,17 @@ public class ClosestPointsCalculator {
     }
 
     public static Point[] findClosestPairOfPoints(Point[] points) {
-        Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        return findClosestPair(points, 0, points.length - 1).toPointArray();
+
+        Point[] sortedX = points.clone();
+        Point[] sortedY = points.clone();
+
+        Arrays.sort(sortedX, (p1, p2) -> Double.compare(p1.x(), p2.x()));
+        Arrays.sort(sortedY, (p1, p2) -> Double.compare(p1.y(), p2.y()));
+
+        return findClosestPair(sortedX, sortedY, 0, points.length - 1).toPointArray();
     }
 
-    private static Pair findClosestPair(Point[] points, int left, int right) {
+    private static Pair findClosestPair(Point[] points, Point[] sortedY, int left, int right) {
 
         int length = right - left + 1;
 
