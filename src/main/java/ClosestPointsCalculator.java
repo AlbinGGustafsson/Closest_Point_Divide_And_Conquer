@@ -53,8 +53,8 @@ public class ClosestPointsCalculator {
         int mid = (left + right) / 2;
         Point midPoint = sortedX[mid];
 
-        ArrayList<Point> sortedYLeft = new ArrayList<>();
-        ArrayList<Point> sortedYRight = new ArrayList<>();
+        List<Point> sortedYLeft = new ArrayList<>();
+        List<Point> sortedYRight = new ArrayList<>();
 
         for (Point p : sortedY) {
             if (p.x() < midPoint.x()) {
@@ -76,9 +76,8 @@ public class ClosestPointsCalculator {
             }
         }
 
-        int n = strip.size();
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+        for (int i = 0; i < strip.size(); i++) {
+            for (int j = i + 1; j < strip.size(); j++) {
                 if (strip.get(j).y() - strip.get(i).y() > closestPair.distance) {
                     break;
                 } else {
