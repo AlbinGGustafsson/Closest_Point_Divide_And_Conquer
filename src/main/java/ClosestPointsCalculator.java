@@ -42,61 +42,53 @@ public class ClosestPointsCalculator {
         Arrays.sort(sortedX, (p1, p2) -> Double.compare(p1.x(), p2.x()));
         Arrays.sort(sortedY, (p1, p2) -> Double.compare(p1.y(), p2.y()));
 
-        return findClosestPair(sortedX, sortedY, 0, points.length - 1).toPointArray();
+        ArrayList<Point> sortedYArrayList = new ArrayList<>(List.of(sortedY));
+
+        return findClosestPair(sortedX, sortedYArrayList, 0, points.length - 1).toPointArray();
     }
 
-    private static Pair findClosestPair(Point[] points, Point[] sortedY, int left, int right) {
+    private static Pair findClosestPair(Point[] sortedX, ArrayList<Point> sortedY, int left, int right) {
 
         int length = right - left + 1;
 
-        //När det bara är 3 eller mindre som ska "jämföras" så "bruteforcas" det minsta paret fram.
-        //Även om det är en loop i en loop så påverkas inte tidskomplexiteten för att det är så få varv.
         if (length <= 3) {
-            return bruteForceMinPair(points, left, right);
+            return bruteForceMinPair(sortedX, left, right);
         }
 
         int mid = (left + right) / 2;
-        Point midPoint = points[mid];
+        Point midPoint = sortedX[mid];
 
-        //Antingen så kommer närmsta paret ligga i vänstra delen, högra delen eller i en av varje.
+        ArrayList<Point> sortedYLeft = new ArrayList<>();
+        ArrayList<Point> sortedYRight = new ArrayList<>();
 
-        //Anropar vänstra delen och högra delen rekursivt.
-        //För att hitta närmsta paren i bägge delar.
-        //Kommer tillslut hamna i "basfallet" och då kommer det minsta paret "bruteforcas".
-        Pair leftPair = findClosestPair(points, left, mid);
-        Pair rightPair = findClosestPair(points, mid + 1, right);
-
-        Pair closestPair = (leftPair.distance < rightPair.distance) ? leftPair : rightPair;
-
-        //Det finns en chans att närmsta paret har en punkt i vänstra och en punkt i högra.
-        //Ett sådant par kan vara närmst om den ligger i strippen.
-        //Strippen är closestPair.distance från mitten.
-
-        //Lägger till Points som ligger i "strippen".
-        List<Point> strip = new ArrayList<>();
-        for (int i = left; i <= right; i++) {
-            if (Math.abs(points[i].x() - midPoint.x()) < closestPair.distance) {
-                strip.add(points[i]);
+        for (Point p : sortedY) {
+            if (p.x() < midPoint.x()) {
+                sortedYLeft.add(p);
+            } else {
+                sortedYRight.add(p);
             }
         }
 
-        //Denna sortering görs bara på Pointsen som ligger i strippen.
-        //I ett värsta fall ligger alla Points i strippen men i praktiken antar jag att det sker sällan
-        //I det fallet blir denna sortering O(N log N) vilket då även gör det rekursiva anropet O(N log N).
-        strip.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
+        Pair leftPair = findClosestPair(sortedX, sortedYLeft, left, mid);
+        Pair rightPair = findClosestPair(sortedX, sortedYRight, mid + 1, right);
+
+        Pair closestPair = (leftPair.distance < rightPair.distance) ? leftPair : rightPair;
+
+        List<Point> strip = new ArrayList<>();
+        for (int i = 0; i < sortedY.size(); i++) {
+            if (Math.abs(sortedY.get(i).x() - midPoint.x()) < closestPair.distance) {
+                strip.add(sortedY.get(i));
+            }
+        }
 
         int n = strip.size();
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                //Eftersom listan är sorterad på punkternas y-koorinater så kan man stoppa en sökning från en
-                //punkt om dess y värde och punkten den jämförs meds y värde skuljer sig mer än closestPair.distance.
                 if (strip.get(j).y() - strip.get(i).y() > closestPair.distance) {
                     break;
                 } else {
                     double distance = strip.get(i).distanceTo(strip.get(j));
-                    //Om en Point har lägre distance än den hittils minsta distance så är det den nya minsta
                     if (distance < closestPair.distance) {
-                        //closestPair = new Pair(strip.get(i), strip.get(j), distance);
                         closestPair.updatePair(strip.get(i), strip.get(j), distance);
                     }
                 }
