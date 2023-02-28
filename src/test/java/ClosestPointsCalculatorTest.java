@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
 public class ClosestPointsCalculatorTest {
-	private static final int[] NUMBER_OF_POINTS_TO_TEST = { 5, 10, 20, 50, 100, 1000, 10000 };
+	private static final int[] NUMBER_OF_POINTS_TO_TEST = { 5, 10, 20, 50, 100, 1000, 10000, 25000 };
 	private static final int NUMBER_OF_TEST_RUNS = 10;
 
 	private static final long DEFAULT_TIMEOUT_MILLIS = 1000;

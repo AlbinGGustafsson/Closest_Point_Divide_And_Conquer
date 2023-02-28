@@ -36,21 +36,16 @@ public class ClosestPointsCalculator {
 
     public static Point[] findClosestPairOfPoints(Point[] points) {
 
-        Point[] sortedX = points.clone();
-        Point[] sortedY = points.clone();
+        Arrays.sort(points, (p1, p2) -> Double.compare(p1.x(), p2.x()));
+        List<Point> sortedY = Arrays.stream(points).sorted((p1, p2) -> Double.compare(p1.y(), p2.y())).toList();
+//        ArrayList<Point> sortedY = new ArrayList<>(List.of(points));
+//        sortedY.sort((p1, p2) -> Double.compare(p1.y(), p2.y()));
 
-        Arrays.sort(sortedX, (p1, p2) -> Double.compare(p1.x(), p2.x()));
-        Arrays.sort(sortedY, (p1, p2) -> Double.compare(p1.y(), p2.y()));
-
-        ArrayList<Point> sortedYArrayList = new ArrayList<>(List.of(sortedY));
-
-        return findClosestPair(sortedX, sortedYArrayList, 0, points.length - 1).toPointArray();
+        return findClosestPair(points, sortedY, 0, points.length - 1).toPointArray();
     }
 
-    private static Pair findClosestPair(Point[] sortedX, ArrayList<Point> sortedY, int left, int right) {
-
+    private static Pair findClosestPair(Point[] sortedX, List<Point> sortedY, int left, int right) {
         int length = right - left + 1;
-
         if (length <= 3) {
             return bruteForceMinPair(sortedX, left, right);
         }
