@@ -11,7 +11,7 @@ Algoritmen skapar 2 listor som kommer innehålla punkter sorterat på deras Y-ko
 Den inskickade "Y-listan" loopas igenom och punkter till vänster om mittpunkten hamnar i den första och de andra hamnar i den andra.
 
 Algoritmen tar fram det minsta paret på vardera sida om denna mittpunkt med två rekursiva anrop.
-När denna "halva" är <= 3 så når den ett "basecase", då hittar den det minsta paret med hjälp av vanlig O(N^2) sökning.
+När denna "halva" är <= 3 så når den ett "basecase", då hittar den det minsta paret genom att jämföra alla med alla
 
 Det finns dock en möjlighet att de 2 närmsta punkterna i en halva korsar dess mittlinje så man måste även ta hänsyn till dessa.
 Om jag kallar avståndet mellan de närmsta punkterna som ligger i någon av halvorna d.
