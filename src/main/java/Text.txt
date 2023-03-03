@@ -20,7 +20,7 @@ De punkter som uppfyller det steget läggs i en separat lista, "strip".
 
 
 Eftersom vi har skickat med en lista sorterad på Y så kan man använda den och stoppa en sökning från en
-punkt om dess y värde och punkten den jämförs meds y värde skuljer sig mer än d.
+punkt om dess y värde och punkten den jämförs meds y värde skiljer sig mer än d.
 Detta gör att antalet punkter som måste jämföras i "strippen" går ner mycket.
 
 Designval:
