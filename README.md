@@ -1,4 +1,3 @@
-Implementation:
 Min implementation till algrotimen som löser "Closest point problem".
 Använder sig utav "divide and conquer" för att hitta det närmsta paret.
 
