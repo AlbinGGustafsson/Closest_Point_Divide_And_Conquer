@@ -1,0 +1,1 @@
+The Closest Point problem is efficiently solved using the Divide and Conquer algorithm, breaking the problem down into manageable sub-problems and merging the solutions. This approach achieves an optimal time complexity of O(n log n), significantly faster compared to other methods.
